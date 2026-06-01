@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from . import schemas,models
+import schemas
+import models
 from database import engine
 
 app = FastAPI()
