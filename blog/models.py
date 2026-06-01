@@ -1,4 +1,4 @@
-from database import bas
+from .database import bas
 from sqlalchemy import Column, Integer, String
 
 class blog(bas):
