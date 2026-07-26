@@ -22,3 +22,14 @@ def create(req: schemas.Blog,db: Session=Depends(get_db)):
     db.commit()
     db.refresh(new_blog)
     return new_blog
+
+
+@app.get('/blog')
+def all(db: Session=Depends(get_db)):
+    blogs=db.query(models.blog).all()
+    return blogs
+
+@app.get('/blog/{id}')
+def show(id,db: Session=Depends(get_db)):
+    blog=db.query(models.blog).filter(models.blog.id==id).first()
+    return blog
