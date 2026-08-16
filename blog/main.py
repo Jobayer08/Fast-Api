@@ -42,12 +42,12 @@ def update(id,req: schemas.Blog,db: Session=Depends(get_db)):
     return 'updated'    
 
 
-@app.get('/blog')
+@app.get('/blog',response_model=list[schemas.ShowBlog])
 def all(db: Session=Depends(get_db)):
     blogs=db.query(models.blog).all()
     return blogs
 
-@app.get('/blog/{id}',status_code=200)
+@app.get('/blog/{id}',status_code=200,response_model=schemas.ShowBlog)
 def show(id,response: Response,db: Session=Depends(get_db)):
     blog=db.query(models.blog).filter(models.blog.id==id).first()
     if not blog:
@@ -55,3 +55,11 @@ def show(id,response: Response,db: Session=Depends(get_db)):
         # response.status_code = status.HTTP_404_NOT_FOUND
         # return {'detail': f'Blog with the id {id} is not available'}
     return blog
+
+@app.post("/user")
+def create_user(req:schemas.User,db: Session=Depends(get_db)):
+    new_user=models.user(name=req.name,email=req.email,password=req.password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
