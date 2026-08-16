@@ -3,6 +3,9 @@ from .import schemas
 from .import models
 from .database import engine,session
 from sqlalchemy.orm import Session 
+from .hashin import Hash
+
+
 
 app = FastAPI()
 
@@ -56,9 +59,12 @@ def show(id,response: Response,db: Session=Depends(get_db)):
         # return {'detail': f'Blog with the id {id} is not available'}
     return blog
 
+
+
 @app.post("/user")
 def create_user(req:schemas.User,db: Session=Depends(get_db)):
-    new_user=models.user(name=req.name,email=req.email,password=req.password)
+    
+    new_user=models.user(name=req.name,email=req.email,password=Hash.bcrypt(req.password))
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
