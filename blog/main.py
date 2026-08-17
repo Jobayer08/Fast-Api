@@ -18,7 +18,7 @@ def get_db():
     finally:
         db.close() 
 
-@app.post('/blog',status_code=status.HTTP_201_CREATED)
+@app.post('/blog',status_code=status.HTTP_201_CREATED,tags=["Blogs"])
 def create(req: schemas.Blog,db: Session=Depends(get_db)):
     new_blog=models.blog(title=req.title,body=req.body)
     db.add(new_blog)
@@ -26,7 +26,7 @@ def create(req: schemas.Blog,db: Session=Depends(get_db)):
     db.refresh(new_blog)
     return new_blog
 
-@app.delete('/blog/{id}',status_code=status.HTTP_204_NO_CONTENT)
+@app.delete('/blog/{id}',status_code=status.HTTP_204_NO_CONTENT,tags=["Blogs"])
 def destroy(id,db: Session=Depends(get_db)):
     blog=db.query(models.blog).filter(models.blog.id==id)
     if not blog.first():
@@ -35,7 +35,7 @@ def destroy(id,db: Session=Depends(get_db)):
     db.commit()
     return 'done'
 
-@app.put('/blog/{id}',status_code=status.HTTP_202_ACCEPTED)
+@app.put('/blog/{id}',status_code=status.HTTP_202_ACCEPTED,tags=["Blogs"])
 def update(id,req: schemas.Blog,db: Session=Depends(get_db)):
     blog=db.query(models.blog).filter(models.blog.id==id)
     if not blog.first():
@@ -45,12 +45,12 @@ def update(id,req: schemas.Blog,db: Session=Depends(get_db)):
     return 'updated'    
 
 
-@app.get('/blog',response_model=list[schemas.ShowBlog])
+@app.get('/blog',response_model=list[schemas.ShowBlog],tags=["Blogs"])
 def all(db: Session=Depends(get_db)):
     blogs=db.query(models.blog).all()
     return blogs
 
-@app.get('/blog/{id}',status_code=200,response_model=schemas.ShowBlog)
+@app.get('/blog/{id}',status_code=200,response_model=schemas.ShowBlog,tags=["Blogs"])
 def show(id,response: Response,db: Session=Depends(get_db)):
     blog=db.query(models.blog).filter(models.blog.id==id).first()
     if not blog:
@@ -61,7 +61,7 @@ def show(id,response: Response,db: Session=Depends(get_db)):
 
 
 
-@app.post("/user",response_model=schemas.show_user)
+@app.post("/user",response_model=schemas.show_user,tags=["users"])
 def create_user(req:schemas.User,db: Session=Depends(get_db)):
     
     new_user=models.user(name=req.name,email=req.email,password=Hash.bcrypt(req.password))
@@ -70,7 +70,7 @@ def create_user(req:schemas.User,db: Session=Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
-@app.get("/user/{id}",response_model=schemas.show_user)
+@app.get("/user/{id}",response_model=schemas.show_user,tags=["users"])
 def get_user(id:int,db:Session=Depends(get_db)):
     user=db.query(models.user).filter(models.user.id == id).first()
     if not user:
