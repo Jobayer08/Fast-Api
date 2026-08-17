@@ -13,4 +13,8 @@ class ShowBlog(BaseModel):
 class User(BaseModel):
     name: str
     email: str
-    password: str        
+    password: str  
+
+class show_user(BaseModel):
+    name: str
+    email:str          
