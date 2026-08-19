@@ -1,15 +1,13 @@
-from fastapi import FastAPI, Depends,status,Response,HTTPException
-from .import schemas
-from .import models
-from .database import engine,get_db
-from sqlalchemy.orm import Session 
-from .hashin import Hash
-from .routers import blog
+from fastapi import FastAPI
+from .database import engine
+from .routers import blog,user
+from . import models
 
 
 
 app = FastAPI()
 app.include_router(blog.router)
+app.include_router(user.router)
 
 models.bas.metadata.create_all(engine)
 
@@ -63,19 +61,19 @@ models.bas.metadata.create_all(engine)
 
 
 
-@app.post("/user",response_model=schemas.show_user,tags=["users"])
-def create_user(req:schemas.User,db: Session=Depends(get_db)):
+# @app.post("/user",response_model=schemas.show_user,tags=["users"])
+# def create_user(req:schemas.User,db: Session=Depends(get_db)):
     
-    new_user=models.user(name=req.name,email=req.email,password=Hash.bcrypt(req.password))
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+#     new_user=models.user(name=req.name,email=req.email,password=Hash.bcrypt(req.password))
+#     db.add(new_user)
+#     db.commit()
+#     db.refresh(new_user)
+#     return new_user
 
-@app.get("/user/{id}",response_model=schemas.show_user,tags=["users"])
-def get_user(id:int,db:Session=Depends(get_db)):
-    user=db.query(models.user).filter(models.user.id == id).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'user with the id {id} is not available')
+# @app.get("/user/{id}",response_model=schemas.show_user,tags=["users"])
+# def get_user(id:int,db:Session=Depends(get_db)):
+#     user=db.query(models.user).filter(models.user.id == id).first()
+#     if not user:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'user with the id {id} is not available')
 
-    return user
+#     return user
