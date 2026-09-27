@@ -3,10 +3,13 @@ from .. import schemas,models,database
 from sqlalchemy.orm import Session
 from .. hashin import Hash
 
-router=APIRouter()
+router=APIRouter(
+    prefix="/user",
+    tags=["Users"]
+    )
 
 get_db=database.get_db
-@router.post("/user",response_model=schemas.show_user,tags=["users"])
+@router.post("/",response_model=schemas.show_user)
 def create_user(req:schemas.User,db: Session=Depends(get_db)):
     
     new_user=models.user(name=req.name,email=req.email,password=Hash.bcrypt(req.password))
@@ -15,7 +18,7 @@ def create_user(req:schemas.User,db: Session=Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
-@router.get("/user/{id}",response_model=schemas.show_user,tags=["users"])
+@router.get("/{id}",response_model=schemas.show_user)
 def get_user(id:int,db:Session=Depends(get_db)):
     user=db.query(models.user).filter(models.user.id == id).first()
     if not user:
