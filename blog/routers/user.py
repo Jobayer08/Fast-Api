@@ -1,7 +1,7 @@
-from fastapi import APIRouter,Depends,status,HTTPException
+from fastapi import APIRouter,Depends,status
 from .. import schemas,models,database
 from sqlalchemy.orm import Session
-from .. hashin import Hash
+from ..repository import user
 
 router=APIRouter(
     prefix="/user",
@@ -11,17 +11,9 @@ router=APIRouter(
 get_db=database.get_db
 @router.post("/",response_model=schemas.show_user)
 def create_user(req:schemas.User,db: Session=Depends(get_db)):
+    return user.create(req,db)
     
-    new_user=models.user(name=req.name,email=req.email,password=Hash.bcrypt(req.password))
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
 
 @router.get("/{id}",response_model=schemas.show_user)
 def get_user(id:int,db:Session=Depends(get_db)):
-    user=db.query(models.user).filter(models.user.id == id).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'user with the id {id} is not available')
-
-    return user
+   return user.show(id,db)
